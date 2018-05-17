@@ -184,14 +184,10 @@ public final class Objects {
     }
 
     /**
-     * Checks that the specified object reference is not {@code null}. This
-     * method is designed primarily for doing parameter validation in methods
-     * and constructors, as demonstrated below:
-     * <blockquote><pre>
+     * 校验对象不为空, 为空则跑出空指针异常, 不为空则返回原对象.
      * public Foo(Bar bar) {
      *     this.bar = Objects.requireNonNull(bar);
      * }
-     * </pre></blockquote>
      *
      * @param obj the object reference to check for nullity
      * @param <T> the type of the reference
