@@ -268,6 +268,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * (Otherwise the table is resized if too many nodes in a bin.)
      * Should be at least 4 * TREEIFY_THRESHOLD to avoid conflicts
      * between resizing and treeification thresholds.
+     * 当桶数组容量小于该值时，优先进行扩容，而不是树化
      */
     static final int MIN_TREEIFY_CAPACITY = 64;
 
@@ -745,6 +746,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         Node<K,V>[] newTab = (Node<K,V>[])new Node[newCap];
         table = newTab;
         if (oldTab != null) {
+            // 如果旧的桶数组不为空，则遍历桶数组，并将键值对映射到新的桶数组中
             for (int j = 0; j < oldCap; ++j) {
                 Node<K,V> e;
                 if ((e = oldTab[j]) != null) {
@@ -752,11 +754,13 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                     if (e.next == null)
                         newTab[e.hash & (newCap - 1)] = e;
                     else if (e instanceof TreeNode)
+                        // 重新映射时，需要对红黑树进行拆分
                         ((TreeNode<K,V>)e).split(this, newTab, j, oldCap);
                     else { // preserve order
                         Node<K,V> loHead = null, loTail = null;
                         Node<K,V> hiHead = null, hiTail = null;
                         Node<K,V> next;
+                        // 遍历链表，并将链表节点按原顺序进行分组
                         do {
                             next = e.next;
                             if ((e.hash & oldCap) == 0) {
@@ -774,6 +778,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                                 hiTail = e;
                             }
                         } while ((e = next) != null);
+                        // 将分组后的链表映射到新桶中
                         if (loTail != null) {
                             loTail.next = null;
                             newTab[j] = loHead;
